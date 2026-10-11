@@ -17,6 +17,10 @@ import mediaRoutes from './routes/mediaRoutes.js';
 import availabilityRoutes from './routes/availabilityRoutes.js';
 import cartRoutes from './routes/cartRoutes.js';
 import quoteRoutes from './routes/quoteRoutes.js';
+import checkoutRoutes from './routes/checkoutRoutes.js';
+import paymentRoutes from './routes/paymentRoutes.js';
+import orderRoutes from './routes/orderRoutes.js';
+import notificationRoutes from './routes/notificationRoutes.js';
 
 const app = express();
 
@@ -42,12 +46,19 @@ app.use(
     },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'X-Razorpay-Signature', 'X-Razorpay-Event-Id']
   })
 );
 
-// 3. Request Parsers
-app.use(express.json({ limit: '10mb' }));
+// 3. Request Parsers (with rawBody capture for webhook signature verification)
+app.use(
+  express.json({
+    limit: '10mb',
+    verify: (req, res, buf) => {
+      req.rawBody = buf.toString();
+    }
+  })
+);
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(cookieParser());
 
@@ -69,6 +80,10 @@ apiV1.use('/media', mediaRoutes);
 apiV1.use('/availability', availabilityRoutes);
 apiV1.use('/cart', cartRoutes);
 apiV1.use('/quotes', quoteRoutes);
+apiV1.use('/checkout', checkoutRoutes);
+apiV1.use('/payments', paymentRoutes);
+apiV1.use('/orders', orderRoutes);
+apiV1.use('/notifications', notificationRoutes);
 
 app.use('/api/v1', apiV1);
 

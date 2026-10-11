@@ -18,7 +18,15 @@ const envSchema = z.object({
   RENTAL_HOLD_DURATION_MINUTES: z.coerce.number().default(15),
   CLOUDINARY_CLOUD_NAME: z.string().default('shaadisaathi_media'),
   CLOUDINARY_API_KEY: z.string().default('123456789012345'),
-  CLOUDINARY_API_SECRET: z.string().default('dev_cloudinary_secret_fallback')
+  CLOUDINARY_API_SECRET: z.string().default('dev_cloudinary_secret_fallback'),
+  RAZORPAY_KEY_ID: z.string().default('rzp_test_shaadisaathi123'),
+  RAZORPAY_KEY_SECRET: z.string().default('test_razorpay_secret_key_12345'),
+  RAZORPAY_WEBHOOK_SECRET: z.string().default('test_webhook_secret_key_12345'),
+  SMTP_HOST: z.string().default('smtp.mailtrap.io'),
+  SMTP_PORT: z.coerce.number().default(2525),
+  SMTP_USER: z.string().default('test_smtp_user'),
+  SMTP_PASS: z.string().default('test_smtp_pass'),
+  SMTP_FROM: z.string().default('ShaadiSaathi <noreply@shaadisaathi.in>')
 });
 
 const parsedEnv = envSchema.safeParse(process.env);
@@ -42,5 +50,13 @@ export const env = parsedEnv.success ? parsedEnv.data : {
   JWT_REFRESH_EXPIRES_IN: process.env.JWT_REFRESH_EXPIRES_IN || '7d',
   DEFAULT_PLATFORM_COMMISSION_PERCENT: 10,
   DEFAULT_GST_PERCENT: 18,
-  RENTAL_HOLD_DURATION_MINUTES: 15
+  RENTAL_HOLD_DURATION_MINUTES: 15,
+  RAZORPAY_KEY_ID: process.env.RAZORPAY_KEY_ID || 'rzp_test_shaadisaathi123',
+  RAZORPAY_KEY_SECRET: process.env.RAZORPAY_KEY_SECRET || 'test_razorpay_secret_key_12345',
+  RAZORPAY_WEBHOOK_SECRET: process.env.RAZORPAY_WEBHOOK_SECRET || 'test_webhook_secret_key_12345',
+  SMTP_HOST: process.env.SMTP_HOST || 'smtp.mailtrap.io',
+  SMTP_PORT: parseInt(process.env.SMTP_PORT || '2525', 10),
+  SMTP_USER: process.env.SMTP_USER || 'test_smtp_user',
+  SMTP_PASS: process.env.SMTP_PASS || 'test_smtp_pass',
+  SMTP_FROM: process.env.SMTP_FROM || 'ShaadiSaathi <noreply@shaadisaathi.in>'
 };
