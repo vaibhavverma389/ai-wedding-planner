@@ -21,6 +21,9 @@ import checkoutRoutes from './routes/checkoutRoutes.js';
 import paymentRoutes from './routes/paymentRoutes.js';
 import orderRoutes from './routes/orderRoutes.js';
 import notificationRoutes from './routes/notificationRoutes.js';
+import eventRoutes from './routes/eventRoutes.js';
+import vendorDashboardRoutes from './routes/vendorDashboardRoutes.js';
+import adminRoutes from './routes/adminRoutes.js';
 
 const app = express();
 
@@ -84,6 +87,9 @@ apiV1.use('/checkout', checkoutRoutes);
 apiV1.use('/payments', paymentRoutes);
 apiV1.use('/orders', orderRoutes);
 apiV1.use('/notifications', notificationRoutes);
+apiV1.use('/events', eventRoutes);
+apiV1.use('/vendors/dashboard', vendorDashboardRoutes);
+apiV1.use('/admin', adminRoutes);
 
 app.use('/api/v1', apiV1);
 
