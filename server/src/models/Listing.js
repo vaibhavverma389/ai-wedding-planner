@@ -161,3 +161,4 @@ listingSchema.index({
 });
 
 export const Listing = mongoose.model('Listing', listingSchema);
+export default Listing;
