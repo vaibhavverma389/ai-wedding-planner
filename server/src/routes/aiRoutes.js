@@ -9,7 +9,7 @@ import {
   getVendorDemandForecast
 } from '../controllers/aiController.js';
 import { optionalAuth, requireAuth } from '../middleware/auth.js';
-import { authorizeRoles } from '../middleware/roles.js';
+import { requireRole } from '../middleware/roleCheck.js';
 
 const router = express.Router();
 
@@ -35,7 +35,7 @@ router.post('/estimate-catering', optionalAuth, estimateCatering);
 router.get(
   '/vendor-demand',
   requireAuth,
-  authorizeRoles('vendor', 'admin'),
+  requireRole('vendor', 'admin'),
   getVendorDemandForecast
 );
 
