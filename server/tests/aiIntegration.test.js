@@ -6,6 +6,7 @@ import app from '../src/app.js';
 import { User } from '../src/models/User.js';
 import Category from '../src/models/Category.js';
 import Listing from '../src/models/Listing.js';
+import { VendorProfile } from '../src/models/VendorProfile.js';
 import { generateAccessToken } from '../src/utils/tokens.js';
 
 let mongoServer;
@@ -41,6 +42,13 @@ beforeAll(async () => {
   });
   vendorToken = generateAccessToken(vendor);
 
+  const vendorProfile = await VendorProfile.create({
+    userId: vendor._id,
+    businessName: 'Rajesh Decorators',
+    slug: 'rajesh-decorators',
+    serviceableCities: ['Delhi NCR']
+  });
+
   const admin = await User.create({
     name: 'ShaadiSaathi Admin',
     email: 'admin@shaadisaathi.test',
@@ -57,21 +65,21 @@ beforeAll(async () => {
     slug: 'decor-floral-setup',
     description: 'Mandap, stage backdrops, and floral production',
     icon: 'flower',
-    sortOrder: 1
+    order: 1
   });
 
   testListing = await Listing.create({
-    vendor: vendor._id,
-    category: testCategory._id,
+    vendorId: vendorProfile._id,
+    categoryId: testCategory._id,
     title: 'Grand Marigold Mandap & Stage Decor',
     slug: 'grand-marigold-mandap-stage-decor',
     description: 'Fresh festive yellow and orange marigold canopy setup with brass urlis.',
-    transactionType: 'service',
-    price: 150000,
-    city: 'Delhi NCR',
-    rating: { average: 4.8, count: 12 },
-    inventory: { totalQuantity: 1, availableQuantity: 1 },
-    isActive: true
+    transactionType: 'BOOK_SERVICE',
+    pricing: { basePrice: 150000, priceType: 'FIXED' },
+    serviceableCities: ['Delhi NCR'],
+    averageRating: 4.8,
+    totalReviews: 12,
+    status: 'ACTIVE'
   });
 });
 

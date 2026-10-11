@@ -64,10 +64,16 @@ export const getVendorRecommendations = async (req, res) => {
   const validated = recommendationQuerySchema.parse(req.body);
 
   // Query actual active database listings to supply to the recommendation engine
-  const query = { isActive: true };
-  if (validated.transactionType) query.transactionType = validated.transactionType;
+  const query = {
+    $or: [{ status: 'ACTIVE' }, { isActive: true }]
+  };
+  if (validated.transactionType) {
+    const upperTT = validated.transactionType.toUpperCase();
+    query.transactionType = { $in: [validated.transactionType, upperTT] };
+  }
 
   const listings = await Listing.find(query)
+    .populate('categoryId', 'name slug')
     .populate('category', 'name slug')
     .limit(40)
     .lean();
@@ -75,14 +81,14 @@ export const getVendorRecommendations = async (req, res) => {
   const formattedListings = listings.map((l) => ({
     id: l._id.toString(),
     title: l.title,
-    category: l.category?.name || 'General',
-    transactionType: l.transactionType,
-    price: l.price,
-    city: l.city || 'Pan India',
-    rating: l.rating?.average || 0,
-    reviewCount: l.rating?.count || 0,
-    images: l.images?.map((img) => img.url) || [],
-    isAvailable: (l.inventory?.availableQuantity ?? 1) > 0
+    category: l.categoryId?.name || l.category?.name || 'General',
+    transactionType: (l.transactionType || 'service').toLowerCase(),
+    price: l.pricing?.basePrice ?? l.price ?? 0,
+    city: l.serviceableCities?.[0] || l.city || 'Pan India',
+    rating: l.averageRating ?? l.rating?.average ?? 0,
+    reviewCount: l.totalReviews ?? l.rating?.count ?? 0,
+    images: (l.media || l.images || []).map((img) => typeof img === 'string' ? img : img?.url || ''),
+    isAvailable: true
   }));
 
   const result = await aiClientService.getRecommendations({
