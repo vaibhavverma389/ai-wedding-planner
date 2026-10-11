@@ -19,8 +19,8 @@ export const paymentService = {
   async createGatewayOrder({ amountInRupees, receiptId, notes = {} }) {
     const amountInPaise = Math.round(amountInRupees * 100);
 
-    // If Razorpay client is active and configured
-    if (razorpayClient) {
+    // If Razorpay client is active and configured (skip during test mode)
+    if (razorpayClient && env.NODE_ENV !== 'test') {
       try {
         const rzpOrder = await razorpayClient.orders.create({
           amount: amountInPaise,
