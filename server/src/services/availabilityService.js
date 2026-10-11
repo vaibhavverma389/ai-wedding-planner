@@ -105,6 +105,48 @@ export const createRentalHold = async (
     expiresAt
   });
 
+  // Concurrency Guard: Validate that total overlapping active reservations do not exceed stockQuantity
+  const listingDoc = await Listing.findById(listingId).select('stockQuantity');
+  const totalStock = listingDoc?.stockQuantity || 0;
+
+  const overlapping = await RentalReservation.find({
+    listingId,
+    status: { $in: ['HOLD', 'CONFIRMED'] },
+    startDate: { $lte: end },
+    endDate: { $gte: start },
+    $or: [
+      { status: 'CONFIRMED' },
+      { status: 'HOLD', expiresAt: { $gt: now } }
+    ]
+  }).sort({ createdAt: 1, _id: 1 });
+
+  const totalReserved = overlapping.reduce((sum, res) => sum + res.quantity, 0);
+
+  if (totalReserved > totalStock) {
+    let cumulative = 0;
+    let allowed = true;
+    for (const res of overlapping) {
+      cumulative += res.quantity;
+      if (res._id.toString() === reservationHold._id.toString()) {
+        if (cumulative > totalStock) {
+          allowed = false;
+        }
+        break;
+      }
+    }
+
+    if (!allowed) {
+      // Revert this hold immediately
+      await RentalReservation.findByIdAndDelete(reservationHold._id);
+      const error = new Error(
+        `Insufficient rental inventory. Only ${Math.max(0, totalStock - (totalReserved - quantity))} unit(s) available for the selected dates.`
+      );
+      error.statusCode = 409;
+      error.errorCode = 'INSUFFICIENT_INVENTORY';
+      throw error;
+    }
+  }
+
   return reservationHold;
 };
 
