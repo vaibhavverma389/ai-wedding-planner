@@ -26,7 +26,9 @@ const envSchema = z.object({
   SMTP_PORT: z.coerce.number().default(2525),
   SMTP_USER: z.string().default('test_smtp_user'),
   SMTP_PASS: z.string().default('test_smtp_pass'),
-  SMTP_FROM: z.string().default('ShaadiSaathi <noreply@shaadisaathi.in>')
+  SMTP_FROM: z.string().default('ShaadiSaathi <noreply@shaadisaathi.in>'),
+  AI_SERVICE_URL: z.string().default('http://localhost:8000'),
+  AI_SERVICE_KEY: z.string().default('shaadisaathi_internal_ai_secret_key_2026_xyz')
 });
 
 const parsedEnv = envSchema.safeParse(process.env);
@@ -58,5 +60,7 @@ export const env = parsedEnv.success ? parsedEnv.data : {
   SMTP_PORT: parseInt(process.env.SMTP_PORT || '2525', 10),
   SMTP_USER: process.env.SMTP_USER || 'test_smtp_user',
   SMTP_PASS: process.env.SMTP_PASS || 'test_smtp_pass',
-  SMTP_FROM: process.env.SMTP_FROM || 'ShaadiSaathi <noreply@shaadisaathi.in>'
+  SMTP_FROM: process.env.SMTP_FROM || 'ShaadiSaathi <noreply@shaadisaathi.in>',
+  AI_SERVICE_URL: process.env.AI_SERVICE_URL || 'http://localhost:8000',
+  AI_SERVICE_KEY: process.env.AI_SERVICE_KEY || 'shaadisaathi_internal_ai_secret_key_2026_xyz'
 };

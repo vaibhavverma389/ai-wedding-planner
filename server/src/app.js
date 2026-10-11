@@ -24,6 +24,7 @@ import notificationRoutes from './routes/notificationRoutes.js';
 import eventRoutes from './routes/eventRoutes.js';
 import vendorDashboardRoutes from './routes/vendorDashboardRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
+import aiRoutes from './routes/aiRoutes.js';
 
 const app = express();
 
@@ -90,6 +91,7 @@ apiV1.use('/notifications', notificationRoutes);
 apiV1.use('/events', eventRoutes);
 apiV1.use('/vendors/dashboard', vendorDashboardRoutes);
 apiV1.use('/admin', adminRoutes);
+apiV1.use('/ai', aiRoutes);
 
 app.use('/api/v1', apiV1);
 
